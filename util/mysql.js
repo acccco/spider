@@ -1,11 +1,14 @@
 const mysql = require('mysql');
 
+const {mysql: mysqlInfo} = require('../info');
+
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '12345678',
-  database: 'post'
+  host: mysqlInfo.host,
+  user: mysqlInfo.user,
+  password: mysqlInfo.password,
+  database: mysqlInfo.database
 });
+
 connection.connect();
 
 exports.getConnection = () => connection;
