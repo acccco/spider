@@ -10,7 +10,7 @@ exports.fetchHtml = (uri, handler) =>
         rejectUnauthorized: false
       },
       (error, response, body) => {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
           const $ = cheerio.load(body, {
             decodeEntities: false
           });
