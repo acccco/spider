@@ -1,27 +1,17 @@
-const R = require('ramda');
-const {fetchHtml} = require('../util/html.js');
+const {fetchHtml} = require('../util/http.js');
 
-exports.getPostList = () =>
-  fetchHtml('https://www.dingdiann.com/ddk94497/', $ => {
-    const links = [];
-    $('#list a').each((_, item) => {
-      links.push(`https://www.dingdiann.com${item.attribs.href}`);
+exports.getBingBgUri = (page) => {
+  return fetchHtml(`https://bing.ioliu.cn/?q=${page}`).then($ => {
+    let data = [];
+    $('.card').each((_, item) => {
+      data.push({
+        title: '',
+        copyright: $(item).find('.description h3').text(),
+        date: $(item).find('.calendar .t').text(),
+        location: $(item).find('.location .t').text(),
+        uri: $(item).find('img').get(0).attribs.src
+      });
     });
-    return R.uniq(links.reverse()).reverse();
+    return data;
   });
-
-exports.getPost = (uri, titleTag, contentTag) =>
-  fetchHtml(uri, $ => {
-    let post = {title: '', content: ''};
-    post.title = $(titleTag)
-      .html()
-      .trim();
-    post.content = $(contentTag)
-      .html()
-      .trim()
-      .replace(/<br><br>/g, '<br>')
-      .replace(/<br>$/, '')
-      .replace(/\s+/g, ' ')
-      .replace(/[-－]{8}.*/, '');
-    return post;
-  });
+};

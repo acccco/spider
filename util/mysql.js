@@ -2,13 +2,22 @@ const mysql = require('mysql');
 
 const {mysql: mysqlInfo} = require('../info');
 
-const connection = mysql.createConnection({
+const wallpaper = mysql.createConnection({
   host: mysqlInfo.host,
   user: mysqlInfo.user,
   password: mysqlInfo.password,
-  database: mysqlInfo.database
+  database: 'wallpaper'
 });
 
-connection.connect();
+wallpaper.connect();
 
-exports.getConnection = () => connection;
+exports.wallpaperQuery = (sql, params) => new Promise((resolve, reject) => {
+  wallpaper.query(sql, params, (err, result) => {
+    if (err) {
+      reject(err);
+      return;
+    }
+    resolve(result);
+  });
+});
+
