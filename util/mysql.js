@@ -21,3 +21,11 @@ exports.wallpaperQuery = (sql, params) => new Promise((resolve, reject) => {
   });
 });
 
+exports.wallpaperInit = () => {
+  wallpaper.connect();
+};
+
+exports.wallpaperClose = () => {
+  wallpaper.end();
+};
+

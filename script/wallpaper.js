@@ -1,15 +1,13 @@
-const service = require('../service/html');
-const sql = require('../service/sql');
-const db = require('../util/mysql');
-const http = require('../util/http');
-const qiniu = require('../util/qiniu');
-
-let filenameReg = /.*\/(.*)$/;
+const {getBingBgUri} = require('../service/html');
+const {insert} = require('../service/sql');
+const {wallpaperQuery} = require('../util/mysql');
+const {fetchImg} = require('../util/http');
+const {uploadStream} = require('../util/qiniu');
 
 async function init() {
-
+  let filenameReg = /.*\/(.*)$/;
   for (let j = 1; j < 100; j++) {
-    let imageInfo = await service.getBingBgUri(1);
+    let imageInfo = await getBingBgUri(j);
     for (let i = 0; i < imageInfo.length; i++) {
       let info = imageInfo[i];
       let uri = info.uri;
@@ -18,12 +16,10 @@ async function init() {
       info.filename = filename;
       info.type = 'bing';
       try {
-        let stream = await http.fetchImg(uri.replace('https', 'http'));
-        console.log('get image');
-        await qiniu.uploadStream(filename, stream);
-        console.log('upload done');
-        await sql.insert('wallpaper', info, db.wallpaperQuery);
-        console.log('insert table');
+        let stream = await fetchImg(uri.replace('https', 'http'));
+        await uploadStream(filename, stream);
+        await insert('wallpaper', info, wallpaperQuery);
+        console.log(`filename:${filename} add`);
       } catch (e) {
         i--;
       }
