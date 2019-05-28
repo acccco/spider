@@ -8,8 +8,8 @@ let filenameReg = /.*\/(.*)$/;
 
 async function init() {
 
-  for (let j = 0; j < 99; j++) {
-    let imageInfo = await service.getBingBgUri(j);
+  for (let j = 1; j < 100; j++) {
+    let imageInfo = await service.getBingBgUri(1);
     for (let i = 0; i < imageInfo.length; i++) {
       let info = imageInfo[i];
       let uri = info.uri;

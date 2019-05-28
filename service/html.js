@@ -1,7 +1,7 @@
 const {fetchHtml} = require('../util/http.js');
 
 exports.getBingBgUri = (page) => {
-  return fetchHtml(`https://bing.ioliu.cn/?q=${page}`).then($ => {
+  return fetchHtml(`https://bing.ioliu.cn/?p=${page}`).then($ => {
     let data = [];
     $('.card').each((_, item) => {
       data.push({
