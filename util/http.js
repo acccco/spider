@@ -1,6 +1,7 @@
-const request = require('request-promise');
+const https = require('https');
+const http = require('http');
+const request = require('request-promise-native');
 const cheerio = require('cheerio');
-const fs = require('fs');
 
 exports.fetchHtml = (uri) => {
   let options = {
@@ -12,12 +13,13 @@ exports.fetchHtml = (uri) => {
   return request(options);
 };
 
-exports.fetchImg = (uri, fileName) => {
-  let options = {
-    uri,
-    encoding: 'binary'
-  };
-  return request(options).then(body => {
-    fs.writeFileSync(fileName, body, 'binary');
-  });
-};
+exports.fetchImg = (uri) => new Promise((resolve, reject) => {
+  let client = /https/.test(uri) ? https : http;
+  client
+    .get(uri, {
+        rejectUnauthorized: false
+      },
+      resolve)
+    .on('error', reject)
+    .end();
+});
