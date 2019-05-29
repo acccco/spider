@@ -2,12 +2,9 @@ const mysql = require('mysql');
 
 const {mysql: mysqlInfo} = require('../info');
 
-const wallpaper = mysql.createConnection({
-  host: mysqlInfo.host,
-  user: mysqlInfo.user,
-  password: mysqlInfo.password,
+const wallpaper = mysql.createConnection(Object.assign({
   database: 'wallpaper'
-});
+}, mysqlInfo));
 
 wallpaper.connect();
 

@@ -20,5 +20,4 @@ async function main() {
   console.log(`filename:${filename} add`);
 }
 
-// main().catch(console.log);
-
+main().catch(console.log);

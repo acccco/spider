@@ -10,7 +10,6 @@ exports.fetchHtml = (uri) => request({
   }
 });
 
-
 exports.fetchJson = (uri) => request({
   uri,
   json: true
