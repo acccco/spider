@@ -1,7 +1,8 @@
+const schedule = require('node-schedule');
+
 const {fetchJson, fetchImg} = require('../util/http');
 const {uploadStream} = require('../util/qiniu');
-const {insert} = require('../service/sql');
-const {wallpaperQuery} = require('../util/mysql');
+const {wallpaperQuery, wallpaperQueryConnect, wallpaperQueryEnd, insert} = require('../util/mysql');
 
 async function main() {
   let filenameReg = /.*?id=(.*)&rf/;
@@ -14,10 +15,16 @@ async function main() {
     location: '',
     filename: filename
   };
+  wallpaperQueryConnect();
   let stream = await fetchImg(`https://cn.bing.com/${json.url}`);
   await uploadStream(filename, stream);
   await insert('wallpaper', data, wallpaperQuery);
-  console.log(`filename:${filename} add`);
+  console.log(`file: ${filename} added`);
+  wallpaperQueryEnd();
 }
 
-main().catch(console.log);
+schedule.scheduleJob('00 10 * * *', function () {
+  main().catch(console.log);
+});
+
+// main().catch(console.log);

@@ -6,8 +6,6 @@ const wallpaper = mysql.createConnection(Object.assign({
   database: 'wallpaper'
 }, mysqlInfo));
 
-wallpaper.connect();
-
 exports.wallpaperQuery = (sql, params) => new Promise((resolve, reject) => {
   wallpaper.query(sql, params, (err, result) => {
     if (err) {
@@ -18,11 +16,22 @@ exports.wallpaperQuery = (sql, params) => new Promise((resolve, reject) => {
   });
 });
 
-exports.wallpaperInit = () => {
+exports.wallpaperQueryConnect = () => {
   wallpaper.connect();
 };
 
-exports.wallpaperClose = () => {
+exports.wallpaperQueryEnd = () => {
   wallpaper.end();
+};
+
+exports.insert = (tableName, params, query) => {
+  let keys = [];
+  let value = [];
+  for (let key in params) {
+    keys.push(key);
+    value.push(params[key]);
+  }
+  let sql = `INSERT INTO ${tableName} (${keys.join(',')}) VALUES (${new Array(keys.length).fill('?').join(',')})`;
+  return query(sql, value);
 };
 

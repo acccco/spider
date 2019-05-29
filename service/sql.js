@@ -6,14 +6,3 @@ exports.createWallpaperTable = (tableName) => `CREATE TABLE ${tableName} (
   location    VARCHAR(255)  ,
   uri         VARCHAR(255)
 )`;
-
-exports.insert = (tableName, params, query) => {
-  let keys = [];
-  let value = [];
-  for (let key in params) {
-    keys.push(key);
-    value.push(params[key]);
-  }
-  let sql = `INSERT INTO wallpaper(${keys.join(',')}) VALUES (${new Array(keys.length).fill('?').join(',')})`;
-  return query(sql, value);
-};

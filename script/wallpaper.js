@@ -1,10 +1,10 @@
 const {getBingBgUri} = require('../service/html');
-const {insert} = require('../service/sql');
-const {wallpaperQuery} = require('../util/mysql');
+const {wallpaperQuery, wallpaperQueryConnect, wallpaperQueryEnd, insert} = require('../util/mysql');
 const {fetchImg} = require('../util/http');
 const {uploadStream} = require('../util/qiniu');
 
 async function init() {
+  wallpaperQueryConnect();
   let filenameReg = /.*\/(.*)$/;
   for (let j = 1; j < 100; j++) {
     let imageInfo = await getBingBgUri(j);
@@ -19,12 +19,13 @@ async function init() {
         let stream = await fetchImg(uri.replace('https', 'http'));
         await uploadStream(filename, stream);
         await insert('wallpaper', info, wallpaperQuery);
-        console.log(`filename:${filename} add`);
+        console.log(`file: ${filename} added`);
       } catch (e) {
         i--;
       }
     }
   }
+  wallpaperQueryEnd();
 }
 
 init().catch(console.log);
