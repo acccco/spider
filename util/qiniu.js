@@ -1,10 +1,9 @@
 const qiniu = require('qiniu');
+const {qiniu: qiniuInfo} = require('../info');
 
-const accessKey = 'i2tskxsPQU6WGlE97r8Vjmze_b8icDVCrLtu-ZzD';
-const secretKey = 'FTQ4ut_WWnZ7Ts3JprtM9zENfmGWODusRihKL8wb';
-const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
+const mac = new qiniu.auth.digest.Mac(qiniuInfo.accessKey, qiniuInfo.secretKey);
 const putPolicy = new qiniu.rs.PutPolicy({
-  scope: 'test',
+  scope: qiniuInfo.scope,
   returnBody: '{"key":"$(key)","hash":"$(etag)","fsize":$(fsize),"bucket":"$(bucket)","name":"$(x:name)"}'
 });
 
