@@ -15,7 +15,8 @@ exports.main = async function main() {
     describe: json.copyright,
     date: json.enddate.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'),
     location: '',
-    filename: filename
+    filename: filename,
+    type: 'bing'
   };
   let stream = await fetchImg(`https://cn.bing.com/${json.url}`);
   await uploadStream(filename, stream);
