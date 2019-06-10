@@ -6,22 +6,28 @@ const {wallpaperQuery, wallpaperQueryConnect, wallpaperQueryEnd, insert} = requi
 
 wallpaperQueryConnect();
 
-async function main() {
+exports.main = async function main() {
   let filenameReg = /.*?id=(.*)&rf/;
   let json = (await fetchJson('https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1')).images[0];
   let filename = filenameReg.exec(json.url)[1];
   let data = {
     title: json.title,
-    copyright: json.copyright,
+    describe: json.copyright,
     date: json.enddate.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'),
     location: '',
     filename: filename
   };
   let stream = await fetchImg(`https://cn.bing.com/${json.url}`);
   await uploadStream(filename, stream);
-  await insert('wallpaper', data, wallpaperQuery);
-  console.log(`file: ${filename} added`);
-}
+  try {
+    await insert('wallpaper', data, wallpaperQuery);
+    console.log(`file: ${filename} added`);
+  } catch (e) {
+    wallpaperQueryConnect();
+    await insert('wallpaper', data, wallpaperQuery);
+    console.log(`file: ${filename} added`);
+  }
+};
 
 schedule.scheduleJob('00 10 * * *', function () {
   main().catch(console.log);
