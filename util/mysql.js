@@ -2,12 +2,8 @@ const mysql = require('mysql');
 
 const {mysql: mysqlInfo} = require('../info');
 
-const wallpaper = mysql.createConnection(Object.assign({
-  database: 'wallpaper'
-}, mysqlInfo));
-
-exports.wallpaperQuery = (sql, params) => new Promise((resolve, reject) => {
-  wallpaper.query(sql, params, (err, result) => {
+const execute = (connect, sql, params) => new Promise((resolve, reject) => {
+  connect.query(sql, params, (err, result) => {
     if (err) {
       reject(err);
       return;
@@ -16,15 +12,7 @@ exports.wallpaperQuery = (sql, params) => new Promise((resolve, reject) => {
   });
 });
 
-exports.wallpaperQueryConnect = () => {
-  wallpaper.connect();
-};
-
-exports.wallpaperQueryEnd = () => {
-  wallpaper.end();
-};
-
-exports.insert = (tableName, params, query) => {
+exports.insert = (tableName, params) => {
   let keys = [];
   let value = [];
   for (let key in params) {
@@ -32,6 +20,16 @@ exports.insert = (tableName, params, query) => {
     value.push(params[key]);
   }
   let sql = `INSERT INTO ${tableName} (${keys.join(',')}) VALUES (${new Array(keys.length).fill('?').join(',')})`;
-  return query(sql, value);
+
+  let wallpaperConnect = mysql.createConnection(Object.assign({
+    database: 'wallpaper'
+  }, mysqlInfo));
+
+  wallpaperConnect.connect();
+
+  return execute(wallpaperConnect, sql, value).then(res => {
+    wallpaperConnect.end();
+    return res;
+  });
 };
 
