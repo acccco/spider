@@ -1,6 +1,5 @@
 const mysql = require('mysql');
-
-const {mysql: mysqlInfo} = require('../info');
+const info = require('../info');
 
 const execute = (connect, sql, params) => new Promise((resolve, reject) => {
   connect.query(sql, params, (err, result) => {
@@ -12,7 +11,7 @@ const execute = (connect, sql, params) => new Promise((resolve, reject) => {
   });
 });
 
-exports.insert = (tableName, params) => {
+exports.insert = (database, tableName, params) => {
   let keys = [];
   let value = [];
   for (let key in params) {
@@ -22,8 +21,8 @@ exports.insert = (tableName, params) => {
   let sql = `INSERT INTO ${tableName} (${keys.join(',')}) VALUES (${new Array(keys.length).fill('?').join(',')})`;
 
   let wallpaperConnect = mysql.createConnection(Object.assign({
-    database: 'wallpaper'
-  }, mysqlInfo));
+    database
+  }, info.mysql));
 
   wallpaperConnect.connect();
 
