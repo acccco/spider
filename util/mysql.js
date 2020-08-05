@@ -1,34 +1,39 @@
-const mysql = require('mysql');
-const info = require('../info');
+const mysql = require("mysql");
+const { mysql: mysqlInfo } = require("../info");
 
-const execute = (connect, sql, params) => new Promise((resolve, reject) => {
-  connect.query(sql, params, (err, result) => {
-    if (err) {
-      reject(err);
-      return;
-    }
-    resolve(result);
+const execute = (connect, sql, params) =>
+  new Promise((resolve, reject) => {
+    connect.query(sql, params, (err, result) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(result);
+    });
   });
-});
 
 exports.insert = (database, tableName, params) => {
   let keys = [];
   let value = [];
   for (let key in params) {
-    keys.push('`' + key + '`');
+    keys.push("`" + key + "`");
     value.push(params[key]);
   }
-  let sql = `INSERT INTO ${tableName} (${keys.join(',')}) VALUES (${new Array(keys.length).fill('?').join(',')})`;
+  let sql = `INSERT INTO ${tableName} (${keys.join(",")}) VALUES (${new Array(
+    keys.length
+  )
+    .fill("?")
+    .join(",")})`;
 
-  let wallpaperConnect = mysql.createConnection(Object.assign({
-    database
-  }, info.mysql));
+  let mysqlConnect = mysql.createConnection({
+    database,
+    ...mysqlInfo
+  });
 
-  wallpaperConnect.connect();
+  mysqlConnect.connect();
 
-  return execute(wallpaperConnect, sql, value).then(res => {
-    wallpaperConnect.end();
+  return execute(mysqlConnect, sql, value).then((res) => {
+    mysqlConnect.end();
     return res;
   });
 };
-
